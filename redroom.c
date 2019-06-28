@@ -30,39 +30,41 @@
 #include <base64.h>
 #include <zenroom.h>
 
-// get rid of the annoying camel-case in Redis, all its types are
-// distinguished by being uppercase
-typedef RedisModuleBlockedClient BLK;
-typedef RedisModuleCtx           CTX;
-typedef RedisModuleString        STR;
-typedef RedisModuleKey           KEY;
-// redis functions
-#define r_alloc(p) RedisModule_Alloc(p)
-#define r_free(p)  RedisModule_Free(p)
+#include <redis_namespace.h>
+
+// // get rid of the annoying camel-case in Redis, all its types are
+// // distinguished by being uppercase
+// typedef RedisModuleBlockedClient BLK;
+// typedef RedisModuleCtx           CTX;
+// typedef RedisModuleString        STR;
+// typedef RedisModuleKey           KEY;
+// // redis functions
+// #define r_alloc(p) RedisModule_Alloc(p)
+// #define r_free(p)  RedisModule_Free(p)
 
 #define MAXOUT 4096
 
 int Zenroom_Reply(CTX *ctx, STR **argv, int argc) {
 	REDISMODULE_NOT_USED(argv);	REDISMODULE_NOT_USED(argc);
-	STR *reply = RedisModule_CreateStringPrintf
+	STR *reply = r_createstringprintf
 		(ctx, "ZENROOM SET '%s' = EXEC(%s)", 
-		 RedisModule_StringPtrLen(argv[2], NULL),
-		 RedisModule_StringPtrLen(argv[3], NULL));
+		 r_stringptrlen(argv[2], NULL),
+		 r_stringptrlen(argv[3], NULL));
 	// return RedisModule_ReplyWithSimpleString(ctx,"OK");
-	RedisModule_ReplyWithString(ctx,reply);
-	RedisModule_FreeString(ctx, reply);
+	r_replywithstring(ctx,reply);
+	r_freestring(ctx, reply);
 	return REDISMODULE_OK;
 }
 int Zenroom_Timeout(CTX *ctx, STR **argv, int argc) {
 	REDISMODULE_NOT_USED(argv);	REDISMODULE_NOT_USED(argc);
-	return RedisModule_ReplyWithSimpleString(ctx,"Request timedout");
+	return r_replywithsimplestring(ctx,"Request timedout");
 }
 void Zenroom_FreeData(CTX *ctx, void *privdata) {
 	REDISMODULE_NOT_USED(ctx);
-	RedisModule_Free(privdata);
+	r_free(privdata);
 }
 void Zenroom_Disconnected(CTX *ctx, BLK *bc) {
-	RedisModule_Log(ctx,"warning","Blocked client %p disconnected!", (void*)bc);
+	r_log(ctx,"warning","Blocked client %p disconnected!", (void*)bc);
 	/* Here you should cleanup your state / threads, and if possible
 	 * call RedisModule_UnblockClient(), or notify the thread that will
 	 * call the function ASAP. */
@@ -99,7 +101,7 @@ typedef struct {
 	size_t stderr_len;
 } zcmd_t;
 void zcmd_teardown(zcmd_t *zcmd) {
-	RedisModule_UnblockClient(zcmd->bc,zcmd);
+	r_unblockclient(zcmd->bc,zcmd);
 }
 
 void *thread_exec(void *arg) {
@@ -108,30 +110,30 @@ void *thread_exec(void *arg) {
 	RedisModule_ThreadSafeContextLock(ctx);
 	// execute script tobuf
 	char *descript = (char*)base64_dec_malloc(zcmd->script);
-	RedisModule_CloseKey(zcmd->scriptkey);
-	RedisModule_Log(ctx, "debug", "exec script:\n%s",descript);
+	r_closekey(zcmd->scriptkey);
+	r_log(ctx, "debug", "exec script:\n%s",descript);
 	if(zcmd->data)
-		RedisModule_Log(ctx, "debug", "exec data:\n%s",zcmd->data);
+		r_log(ctx, "debug", "exec data:\n%s",zcmd->data);
 	zcmd->error = zenroom_exec_tobuf
 		(descript, NULL, NULL, zcmd->data, 1,
 		 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
-	RedisModule_Free(descript);
+	r_free(descript);
 	if(zcmd->data)
-		RedisModule_CloseKey(zcmd->datakey);
+		r_closekey(zcmd->datakey);
 	zcmd->stdout_len = strlen(zcmd->stdout_buf);
 	zcmd->stderr_len = strlen(zcmd->stderr_buf);
 	// write result to dest
 	if(!zcmd->error) {
-		zcmd->error = RedisModule_StringSet(
+		zcmd->error = r_stringset(
 			zcmd->destkey,
-			RedisModule_CreateString(ctx, zcmd->stdout_buf, zcmd->stdout_len));
+			r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
 	} else {
-		zcmd->error = RedisModule_StringSet(
+		zcmd->error = r_stringset(
 			zcmd->destkey,
-			RedisModule_CreateString(ctx, zcmd->stderr_buf, zcmd->stderr_len));
+			r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len));
 	}
 	// close, unlock and unblock after execution
-	RedisModule_CloseKey(zcmd->destkey);
+	r_closekey(zcmd->destkey);
 	RedisModule_ThreadSafeContextUnlock(ctx);
 	RedisModule_FreeThreadSafeContext(ctx);
 	zcmd_teardown(zcmd);
@@ -157,34 +159,34 @@ int Zenroom_Command(CTX *ctx, STR **argv, int argc) {
 	if (argc < 4) return RedisModule_WrongArity(ctx);
 
 	// ZENROOM EXEC <script> <destination> [<data> <keys>]
-	carg = RedisModule_StringPtrLen(argv[1], &larg);
+	carg = r_stringptrlen(argv[1], &larg);
 	if (strncasecmp(carg,"EXEC",4) == 0) {
 		zcmd_t *zcmd = zcmd_init(ctx);
 		zcmd->cmd = EXEC;
 		// get the script variable name from the next argument
-		zcmd->scriptkey = RedisModule_OpenKey(ctx, argv[2], REDISMODULE_READ);
-		if (RedisModule_KeyType(zcmd->scriptkey) != REDISMODULE_KEYTYPE_STRING)
-			return RedisModule_ReplyWithError(ctx, "ERR ZENROOM EXEC: no script found");
-		zcmd->script = RedisModule_StringDMA(zcmd->scriptkey,&zcmd->scriptlen,REDISMODULE_READ);
+		zcmd->scriptkey = r_openkey(ctx, argv[2], REDISMODULE_READ);
+		if (r_keytype(zcmd->scriptkey) != REDISMODULE_KEYTYPE_STRING)
+			return r_replywitherror(ctx, "ERR ZENROOM EXEC: no script found");
+		zcmd->script = r_stringdma(zcmd->scriptkey,&zcmd->scriptlen,REDISMODULE_READ);
 		// destination
-		zcmd->destkey = RedisModule_OpenKey(ctx, argv[3], REDISMODULE_WRITE);
+		zcmd->destkey = r_openkey(ctx, argv[3], REDISMODULE_WRITE);
 		// optional arguments
 		if(argc >=5) { // DATA
-			zcmd->datakey = RedisModule_OpenKey(ctx, argv[4], REDISMODULE_READ);
-			if (RedisModule_KeyType(zcmd->datakey) != REDISMODULE_KEYTYPE_STRING)
-				return RedisModule_ReplyWithError(ctx, "ERR ZENROOM EXEC: no data found");
-			zcmd->data = RedisModule_StringDMA(zcmd->datakey,&zcmd->datalen,REDISMODULE_READ);
+			zcmd->datakey = r_openkey(ctx, argv[4], REDISMODULE_READ);
+			if (r_keytype(zcmd->datakey) != REDISMODULE_KEYTYPE_STRING)
+				return r_replywitherror(ctx, "ERR ZENROOM EXEC: no data found");
+			zcmd->data = r_stringdma(zcmd->datakey,&zcmd->datalen,REDISMODULE_READ);
 		}
 		if (pthread_create(&tid, NULL, thread_exec, zcmd) != 0) {
 			RedisModule_AbortBlock(zcmd->bc);
 			r_free(zcmd); // reply not called from abort: free here
-			return RedisModule_ReplyWithError(ctx,"-ERR Can't start thread");
+			return r_replywitherror(ctx,"-ERR Can't start thread");
 		}
 		return REDISMODULE_OK;
 	}
 
 	// no command recognized
-	return RedisModule_ReplyWithError(ctx,"ERR invalid ZENROOM command");
+	return r_replywitherror(ctx,"ERR invalid ZENROOM command");
 
 }
 
