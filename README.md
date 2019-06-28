@@ -1,6 +1,22 @@
 # RedRoom - Zenroom crypto module for Redis
 
-| [![Dyne.org](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%9D%A4%20by-Dyne.org-blue.svg)](https://dyne.org) |
+```
+   .-..
+  `hs/+ooyo:`        :+::..
+  `ho     .oy-       sy///osso/:`                  -/++//.        `/ysoso/.        `/oyyyy+-      .o+`       /+-
+  `yo       sy`     .hy      `.:`          `     `ss-. -ho       :y+    `+y.      :hs-`` -hy.     +h/y      /h.oo
+  +y/      -y+       oy.             `-/+soy+    :y/    sy-      +y`     `sy.     yh-     `sy:    +h y+     os  oo
+  +y/ ``.:ss-        /y.           .+y+-` `ho    `y+    -yo      yy       /y+     oy:      :yy`   /y--y+   `ys  `ho
+  oyyyo+/-.          /y:          /yo.     oy:    /y:   `ys     .yo       .yy     yy-       oy+   +y: .y+  /y.   +h
+  +y-sy:             +ysoys+++// /y:       .y+     -+osshsy/    .yo        ys     oy/       /yo   oh   ss``so    .yo
+  oy` :ss.           +y+   `.--. oy-       .yy        -yo-yh`    yy.      .yo     :hy`      +yo  `yo   `ysos`     os
+  oy`  `+y+`         +yo         .yo        oy.       -y+ sy:    /y+      -y-      :yo      sy-  :yo    .yy-      .h+
+  +y`    .ss:        -ys          oy:      `+yo       +y- /y/     /y.    `+y-      .hy-   `-yy   /y/     `-        sh`
+  sy`      /ys-      oyyoooossoo/ `:+o+oooss+/-      .ys  /yy     `/os++os+.        `oyyysyo:    yh`               .y+
+  yy`       `+:                       ````           +y/  `oo         ````             ````      yy`                :s- 
+  .:                                                 -/                                          `
+```
+[![Dyne.org](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%9D%A4%20by-Dyne.org-blue.svg)](https://dyne.org)
 
 
 Module written using the new asynchronous Redis API to execute FAST
