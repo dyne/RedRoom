@@ -32,10 +32,10 @@ EOF
 }
 
 execute() {
-	echo "zenroom exec encrypt encdest" | redis-cli
+	echo "zenroom.exec encrypt encdest" | redis-cli
 	echo "get encdest" | redis-cli
 
-	echo "zenroom exec decrypt decdest encdest" | redis-cli
+	echo "zenroom.exec decrypt decdest encdest" | redis-cli
 	echo "get decdest" | redis-cli
 }
 
