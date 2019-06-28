@@ -31,16 +31,6 @@
 
 #include <redis_namespace.h>
 
-// // get rid of the annoying camel-case in Redis, all its types are
-// // distinguished by being uppercase
-// typedef RedisModuleBlockedClient BLK;
-// typedef RedisModuleCtx           CTX;
-// typedef RedisModuleString        STR;
-// typedef RedisModuleKey           KEY;
-// // redis functions
-// #define r_alloc(p) RedisModule_Alloc(p)
-// #define r_free(p)  RedisModule_Free(p)
-
 #define MAX_SCRIPT 8196
 #define MAXOUT 4096
 
@@ -112,15 +102,19 @@ void *exec_tobuf(void *arg) {
 	zcmd->stderr_len = strlen(zcmd->stderr_buf);
 	if(!zcmd->error) {
 		if(!zcmd->destkey) {
-			r_log(ctx, "notice", "ZENROOM.EXEC success:\n%s", r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
+			r_log(ctx, "notice", "ZENROOM.EXEC success:\n%s",
+			      r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
 		} else {
-			zcmd->error = r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
+			zcmd->error =
+				r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
 		}
 	} else {
 		if(!zcmd->destkey) {
-			r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s", r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
+			r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s",
+			      r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
 		} else {
-			zcmd->error = r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len));
+			zcmd->error =
+				r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len));
 		}
 	}
 
@@ -137,7 +131,9 @@ void *exec_tobuf(void *arg) {
 	return NULL;
 }
 
-#define PCALLFMT "script = base64(\"%s\"); res, f = pcall(loadstring, script:str()); if(res) then pcall(f) else print \"ERROR\" end"
+#define PCALLFMT "script = base64(\"%s\"); " \
+	"res, f = pcall(loadstring, script:str()); " \
+	"if(res) then pcall(f) else print \"ERROR\" end"
 
 int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	pthread_t tid;
