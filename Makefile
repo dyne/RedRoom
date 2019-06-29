@@ -5,7 +5,7 @@ LDADD := ${ZENROOM_LIB}
 VERSION := $(shell cat ${ZENROOM}/VERSION)
 
 SOURCES := \
-	base64.o redroom.o
+	redroom.o
 
 
 .c.o:

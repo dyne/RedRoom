@@ -100,24 +100,22 @@ void *exec_tobuf(void *arg) {
 
 	zcmd->stdout_len = strlen(zcmd->stdout_buf);
 	zcmd->stderr_len = strlen(zcmd->stderr_buf);
-	if(!zcmd->error) {
-		if(!zcmd->destkey) {
-			r_log(ctx, "notice", "ZENROOM.EXEC success:\n%s",
-			      r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
-		} else {
-			zcmd->error =
-				r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
-		}
-	} else {
-		if(!zcmd->destkey) {
-			r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s",
-			      r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len));
-		} else {
-			zcmd->error =
-				r_stringset(zcmd->destkey, r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len));
-		}
+	if(zcmd->error && zcmd->destkey) {
+		STR *out = r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len);
+		r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s", zcmd->stderr_buf);
+		r_stringset(zcmd->destkey, out);
 	}
-
+	if(zcmd->error && !zcmd->destkey) {
+		r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s", zcmd->stderr_buf);
+	}
+	if(!zcmd->error && !zcmd->destkey) {
+		r_log(ctx, "notice", "ZENROOM.EXEC success:\n%s", zcmd->stdout_buf);
+	}
+	if(!zcmd->error && zcmd->destkey) {
+		STR *out = r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len);
+		r_log(ctx, "verbose", "ZENROOM.EXEC success:\n%s", zcmd->stdout_buf);
+		r_stringset(zcmd->destkey, out);
+	}
 	// close, unlock and unblock after execution
 	r_closekey(zcmd->destkey);
 	RedisModule_ThreadSafeContextUnlock(ctx);
