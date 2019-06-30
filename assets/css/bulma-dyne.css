@@ -6,3 +6,7 @@ ul {
 	display: inline-block;
 }
 
+.navbar-item img {
+	display: inline-block;
+	vertical-align: -moz-middle-with-baseline;
+}
