@@ -1,0 +1,27 @@
+site_name: RedRoom
+repo_url: https://github.com/decodeproject/redroom
+site_author: Jaromil
+site_description: RedRoom is powered by the Zenroom crypto VM to bring easy to use yet advanced cryptographic functionalities for Redis.
+copyright: Copyright (C) 2019 by the <a href="https://dyne.org">Dyne.org foundation</a>. The source code is licensed <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a>.
+
+extra_css:
+  - //fonts.googleapis.com/css?family=Montserrat&display=swap
+  - css/custom.css
+
+markdown_extensions:
+  - admonition
+  - codehilite
+
+theme:
+  name: null
+  custom_dir: 'dyne/'
+
+extra:
+  links:
+    releases: https://files.dyne.org/redroom
+    docker: https://hub.docker.com/r/dyne/redroom
+  drift_handle: s64nd7w43g53
+  nav:
+    subtitle: Redis powered by Zenroom
+    logo: null # /img/redroom-trans.png
+    og_image_large: /img/redroom-trans.png
