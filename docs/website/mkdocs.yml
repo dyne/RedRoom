@@ -16,7 +16,7 @@ markdown_extensions:
 
 theme:
   name: null
-  custom_dir: 'dyne/'
+  custom_dir: 'mkdocs-dyne-theme/'
 
 extra:
   links:
@@ -27,3 +27,4 @@ extra:
     subtitle: Redis powered by Zenroom
     logo: null # /img/redroom-trans.png
     og_image_large: /img/redroom-trans.png
+  github_card: decodeproject/redroom
