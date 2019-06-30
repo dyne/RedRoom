@@ -10,6 +10,7 @@ typedef RedisModuleKey           KEY;
 
 // redis functions
 #define r_alloc(p) RedisModule_Alloc(p)
+#define r_calloc(n,p) RedisModule_Calloc(n,p)
 #define r_free(p)  RedisModule_Free(p)
 
 // redis log level strings:

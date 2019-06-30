@@ -61,12 +61,13 @@ typedef struct {
 BLK *block_client(CTX *ctx);
 
 zcmd_t *zcmd_init(CTX *ctx) {
-	zcmd_t *zcmd = r_alloc(sizeof(zcmd_t)); // to be freed at end of thread!
-	zcmd->stdout_len = MAXOUT; zcmd->stderr_len = MAXOUT; zcmd->error = 0;
-	zcmd->scriptkey = NULL; zcmd->script = NULL;
-	zcmd->destkey = NULL;
-	zcmd->datakey = NULL; zcmd->data = NULL;
-	zcmd->decscript = NULL;
+	zcmd_t *zcmd = r_calloc(1,sizeof(zcmd_t)); // to be freed at end of thread!
+	zcmd->stdout_len = MAXOUT; zcmd->stderr_len = MAXOUT;
+	// memsetzcmd->error = 0;
+	// zcmd->scriptkey = NULL; zcmd->script = NULL;
+	// zcmd->destkey = NULL;
+	// zcmd->datakey = NULL; zcmd->data = NULL;
+	// zcmd->decscript = NULL;
 	zcmd->bc = block_client(ctx);
 	return(zcmd);
 }
@@ -95,8 +96,8 @@ void *exec_tobuf(void *arg) {
 	}
 
 	if(zcmd->decscript) r_free(zcmd->decscript);
-	if(zcmd->data) r_closekey(zcmd->datakey);
-	if(zcmd->keys) r_closekey(zcmd->keyskey);
+	if(zcmd->datakey) r_closekey(zcmd->datakey);
+	if(zcmd->keyskey) r_closekey(zcmd->keyskey);
 
 	zcmd->stdout_len = strlen(zcmd->stdout_buf);
 	zcmd->stderr_len = strlen(zcmd->stderr_buf);
@@ -129,9 +130,39 @@ void *exec_tobuf(void *arg) {
 	return NULL;
 }
 
-#define PCALLFMT "script = base64(\"%s\"); " \
-	"res, f = pcall(loadstring, script:str()); " \
-	"if(res) then pcall(f) else print \"ERROR\" end"
+#define STRPCALL         "f = loadstring('%s'); f()"	
+
+#define B64PCALL   "f = loadstring(base64('%s'):str()); f() "
+
+#define B64SHA512 "print(ECDH.kdf(HASH.new('sha512'),'%s'):base64())"
+
+int zenroom_setpwd(CTX *ctx, STR **argv, int argc) {
+	RedisModule_AutoMemory(ctx);
+	// we must have at least 2 args: SCRIPT DESTINATION
+	if (argc < 3) return RedisModule_WrongArity(ctx);
+	debug("setpwd argc: %u",argc);
+	// ZENROOM.HASHTOKEY <username> <password>
+	debug("username: %s", str(argv[1]));
+	zcmd_t *zcmd = zcmd_init(ctx);
+	KEY *username = r_openkey(ctx, argv[1], REDISMODULE_WRITE);
+	char *password = (char*)r_stringptrlen(argv[2],&zcmd->keyslen);
+	char *script = r_alloc(zcmd->keyslen + strlen(B64SHA512) + 16);
+	snprintf(script, MAX_SCRIPT, B64SHA512, (char*)password);
+	int error = zenroom_exec_tobuf
+		(script, NULL, (char*)password, NULL, 1,
+		 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
+	r_free(script);
+	if(!error)
+		r_stringset((KEY*)username,
+		            r_createstring(ctx, zcmd->stdout_buf,
+		                           strlen(zcmd->stdout_buf)));
+	r_closekey((KEY*)username);
+	if(error)
+		return r_replywitherror(ctx,"ERROR: setpwd");
+	r_replywithsimplestring(ctx,"OK");
+	return REDISMODULE_OK;
+}
+
 
 int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	pthread_t tid;
@@ -147,8 +178,8 @@ int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 		return r_replywitherror(ctx,"ZENROOM.EXEC: script string not found");
 	}
 	// uses zenroom to decode base64 and parse script before launching in protected mode
-	zcmd->decscript = r_alloc(zcmd->scriptlen + strlen(PCALLFMT) + 16);
-	snprintf(zcmd->decscript, MAX_SCRIPT, PCALLFMT, zcmd->script);
+	zcmd->decscript = r_alloc(zcmd->scriptlen + strlen(B64PCALL) + 16);
+	snprintf(zcmd->decscript, MAX_SCRIPT, B64PCALL, zcmd->script);
 	r_closekey(zcmd->scriptkey); zcmd->script = NULL;
 
 	if(argc > 2) {
@@ -157,8 +188,13 @@ int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	}
 
 	if(argc > 3) {
-		debug("%s: data key", str(argv[3]));
-		z_readargstr(ctx, 3, zcmd->data, zcmd->datakey, zcmd->datalen);
+		const char *_data = str(argv[3]);
+		if(_data == NULL || strncmp(_data,"nil",3)==0) {
+			debug("%s: data key (skip)","NULL");
+		} else {
+			debug("%s: data key", _data);
+			z_readargstr(ctx, 3, zcmd->data, zcmd->datakey, zcmd->datalen);
+		}
 	}
 	if(argc > 4) {
 		debug("%s: keys key", str(argv[4]));
@@ -182,9 +218,17 @@ int RedisModule_OnLoad(CTX *ctx) {
 	if (RedisModule_Init(ctx, "zenroom", 1, REDISMODULE_APIVER_1) ==
 	    REDISMODULE_ERR)
 		return REDISMODULE_ERR;
+	// int RM_CreateCommand(RedisModuleCtx *ctx, const char *name,
+	// RedisModuleCmdFunc cmdfunc, const char *strflags,
+	// int firstkey, int lastkey, int keystep) see:
+	// https://redis.io/commands/command
 	if (RedisModule_CreateCommand(ctx, "zenroom.exec",
-	                              zenroom_exectokey, "readonly",
-	                              1, 1, 1) == REDISMODULE_ERR)
+	                              zenroom_exectokey, "write",
+	                              -2, 1, 1) == REDISMODULE_ERR);
+	if (RedisModule_CreateCommand(ctx, "zenroom.setpwd",
+	                              zenroom_setpwd, "write",
+	                              2, 1, 1) == REDISMODULE_ERR)
+
 		return REDISMODULE_ERR;
 	return REDISMODULE_OK;
 }
