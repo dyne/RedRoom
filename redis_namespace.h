@@ -29,8 +29,8 @@ typedef RedisModuleKey           KEY;
 #define r_replywithsimplestring(c,s) RedisModule_ReplyWithSimpleString(c,s)
 #define r_replywitherror(ctx, str) RedisModule_ReplyWithError(ctx, str)
 
-#define r_blockclient(ctx,reply_f,timeout_f,free_f,ttl) \
-	RedisModule_BlockClient(ctx,reply_f,timeout_f,free_f,ttl)
+#define r_blockclient RedisModule_BlockClient
+#define r_setdisconnectcallback RedisModule_SetDisconnectCallback
 #define r_unblockclient(b,u) RedisModule_UnblockClient(b,u)
 
 #define r_keytype(k) RedisModule_KeyType(k)

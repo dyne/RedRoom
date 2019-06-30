@@ -5,7 +5,7 @@ LDADD := ${ZENROOM_LIB}
 VERSION := $(shell cat ${ZENROOM}/VERSION)
 
 SOURCES := \
-	redroom.o
+	redroom.o exectokey.o setpwd.o
 
 
 .c.o:
