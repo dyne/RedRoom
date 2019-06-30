@@ -2,7 +2,7 @@
 
 zmodload zsh/system
 
-testrounds=3
+testrounds=100
 
 cat <<EOF | sysread secretgen
 secret = { text = 'test secret',
@@ -36,7 +36,7 @@ print(JSON.encode(map(decode, str)))
 EOF
 
 newsecret_redis() {
-	echo "set ${1:-secret} '`echo $secretgen | zenroom`'"
+	echo "set ${1:-secret} '`echo $secretgen | zenroom`'" | redis-cli
 }
 
 newsecret_local() {
@@ -71,5 +71,8 @@ newsecret_local
 execute_local
 
 load_redis
-newsecret_redis
-execute_redis
+
+for i in `seq 1 $testrounds`; do
+	newsecret_redis
+	execute_redis
+done

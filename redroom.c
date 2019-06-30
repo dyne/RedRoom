@@ -173,6 +173,7 @@ int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	zcmd_t *zcmd = zcmd_init(ctx);
 
 	// read scripts also from base64 encoded strings
+	debug("arg1: %s: script to exec", str(argv[1]));
 	z_readargstr(ctx, 1, zcmd->script, zcmd->scriptkey, zcmd->scriptlen);
 	if(!zcmd->script) {
 		return r_replywitherror(ctx,"ZENROOM.EXEC: script string not found");
@@ -183,22 +184,25 @@ int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	r_closekey(zcmd->scriptkey); zcmd->script = NULL;
 
 	if(argc > 2) {
-		debug("%s: destination key", str(argv[2]));
+		debug("arg2: %s: destination key", str(argv[2]));
 		zcmd->destkey = r_openkey(ctx, argv[2], REDISMODULE_WRITE);
 	}
 
 	if(argc > 3) {
 		const char *_data = str(argv[3]);
 		if(_data == NULL || strncmp(_data,"nil",3)==0) {
-			debug("%s: data key (skip)","NULL");
+			debug("arg3: %s: data key (skip)","NULL");
+			zcmd->data = NULL;
 		} else {
-			debug("%s: data key", _data);
+			debug("arg3: %s: data key", _data);
 			z_readargstr(ctx, 3, zcmd->data, zcmd->datakey, zcmd->datalen);
 		}
 	}
 	if(argc > 4) {
-		debug("%s: keys key", str(argv[4]));
+		debug("arg4: %s: keys key", str(argv[4]));
 		z_readargstr(ctx, 4, zcmd->keys, zcmd->keyskey, zcmd->keyslen);
+		if(!zcmd->keys)
+			return r_replywitherror(ctx,"-ERR argument 4 is null");			
 	}
 	if (pthread_create(&tid, NULL, exec_tobuf, zcmd) != 0) {
 		RedisModule_AbortBlock(zcmd->bc);
