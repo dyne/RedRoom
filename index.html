@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Easy crypto for Redis - RedRoom</title>
+		<link rel="stylesheet" href="./assets/css/bulma.min.css">
+		<link rel="stylesheet" href="./assets/css/bulma-dyne.css">
+
+		<link rel="stylesheet" href="//cdn.materialdesignicons.com/3.7.95/css/materialdesignicons.min.css">
+		
+		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat&display=swap">
+		
+		<link rel="stylesheet" href="css/custom.css">
+		
+
+	</head>
+	<body>
+		<nav class="navbar has-shadow is-transparent">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+			
+            <h1 class="title">RedRoom</h1>
+			
+        </a>
+        <!-- <div class="navbar-burger burger" data-target="navbarExampleTransparentExample">
+             <span></span>
+             <span></span>
+             <span></span>
+             </div> -->
+    </div>
+	
+	<div id="navbarExampleTransparentExample" class="navbar-menu">
+        <div class="navbar-start">
+			<div class="navbar-item">
+				Redis powered by Zenroom
+			</div>
+		</div>
+	</div>
+	
+	<!-- 
+		 <div id="navbarExampleTransparentExample" class="navbar-menu">
+         <div class="navbar-start">
+         
+         
+         <a class="navbar-item" href="">
+         Easy crypto for Redis
+         </a>
+         
+         
+         </div>
+	-->
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="field is-grouped">
+                    <p class="control">
+                        <a class="button is-primary" href="">
+                            <span class="icon">
+                                <i class="mdi mdi-download"></i>
+                            </span>
+                            <span>Download</span>
+                        </a>
+                    </p>
+                    <p class="control">
+                        <a href="https://dyne.org">
+                            <img src="https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%9D%A4%20by-Dyne.org-blue.svg" alt="Made with love at Dyne.org" title="We are free to share code and we code to share Freedom"></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-one-quarter">
+						<aside class="menu">
+    
+    <h1 class="menu-label">
+        <span class="mdi mdi-fire has-text-danger"></span> Quick Links</h1>
+    <ul class="menu-list" style="list-style: none">
+        
+        <li><span class="mdi mdi-github-circle"></span><a href="https://github.com/decodeproject/redroom/">Source Code</a></li>
+        
+        
+        <li><span class="mdi mdi-history"></span><a href="https://files.dyne.org/redroom">Latest Release</a></li>
+        
+        
+        <li><span class="mdi mdi-docker"></span><a href="https://hub.docker.com/r/dyne/redroom">Docker image</a></li>
+        
+        
+        
+    </ul>
+    
+
+    <hr width="20%">
+
+    <h1 class="menu-label">
+        <span class="mdi mdi-format-list-numbered has-text-primary"></span> Table of Contents</h1>
+	
+    
+    <ul class="menu-list">
+        <li>
+	<a href="#easy-crypto-for-redis">Easy crypto for Redis</a>
+	
+    <ul>
+      
+        <li>
+	<a href="#supported-platforms"> Supported platforms</a>
+	
+</li>
+      
+        <li>
+	<a href="#commands"> Commands</a>
+	
+</li>
+      
+        <li>
+	<a href="#examples"> Examples</a>
+	
+</li>
+      
+    </ul>
+  
+</li>
+    </ul>
+    
+	
+</aside>
+					</div>
+					<div class="column">
+						<div class="content">
+							 <h1 id="easy-crypto-for-redis">Easy crypto for Redis</h1>
+<p>RedRoom is powered by the Zenroom crypto VM to bring easy to use yet
+advanced cryptographic functionalities for Redis.</p>
+<!-- ## <span class="mdi mdi-fire has-text-danger"></span> Quick Links -->
+
+<!-- <ul style="list-style: none"> -->
+
+<!-- <li><span class="mdi mdi-github-circle"></span> Source Code at Github</li> -->
+
+<!-- <li><span class="mdi mdi-history"></span> Latest Release</li> -->
+
+<!-- <li><span class="mdi mdi-docker"></span> Docker image: dyne/redroom</li> -->
+
+<!-- <li><span class="mdi mdi-school"></span> Quick Start Guide</li> -->
+
+<!-- <li><span class="mdi mdi-forum"></span> Mailing list / forum</li> -->
+
+<!-- </ul> -->
+
+<h2 id="supported-platforms"><span class="mdi mdi-raspberry-pi has-text-info"></span> Supported platforms</h2>
+<p>
+RedRoom is developed and tested on Linux, Windows and Mac OS.
+</p>
+
+<p>
+RedRoom runs fine on ARM, i386 and x86_64 CPUs.
+</p>
+
+<p>The <a href="https://zenroom.dyne.org">Zenroom</a> crypto engine at
+the core of RedRoom is portable to:
+<ul style="list-style: none">
+<li><span class="mdi mdi-apple"></span> native iOS framework
+<li><span class="mdi mdi-android"></span> native Android library
+<li><span class="mdi mdi-language-javascript"></span> Javascript and WebAssembly
+<li><span class="mdi mdi-chip"></span> Cortex chips
+<li> ... even more targets
+</ul></p>
+<h2 id="commands"><span class="mdi mdi-textbox has-text-link" ></span> Commands</h2>
+<ul>
+<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
+<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
+<li><code>mkdocs build</code> - Build the documentation site.</li>
+<li><code>mkdocs help</code> - Print this help message.</li>
+</ul>
+<h2 id="examples"><span class="mdi mdi-code-tags-check has-text-success"></span> Examples</h2>
+<div class="codehilite"><pre><span class="n">mkdocs</span><span class="p">.</span><span class="n">yml</span>    <span class="err">#</span> <span class="n">The</span> <span class="n">configuration</span> <span class="n">file</span><span class="p">.</span>
+<span class="n">docs</span><span class="o">/</span>
+    <span class="n">index</span><span class="p">.</span><span class="n">md</span>  <span class="err">#</span> <span class="n">The</span> <span class="n">documentation</span> <span class="n">homepage</span><span class="p">.</span>
+    <span class="p">...</span>       <span class="err">#</span> <span class="n">Other</span> <span class="n">markdown</span> <span class="n">pages</span><span class="p">,</span> <span class="n">images</span> <span class="n">and</span> <span class="n">other</span> <span class="n">files</span><span class="p">.</span>
+</pre></div>
+
+
+<p><img alt="RedRoom logo" src="/img/redroom-trans.png" /></p> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<footer class="footer">
+	<div class="content has-text-centered">
+		<p>
+			<strong>RedRoom</strong> is Copyright (C) 2019 by the <a href="https://dyne.org">Dyne.org foundation</a>. The source code is licensed <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a>.
+		</p>
+	</div>
+</footer>
+		
+		 <!-- Start of Async Drift Code -->
+<script>
+ "use strict";
+
+ !function() {
+	 var t = window.driftt = window.drift = window.driftt || [];
+	 if (!t.init) {
+		 if (t.invoked) return void (window.console && console.error &&
+									 console.error("Drift snippet included twice."));
+		 t.invoked = !0, t.methods = [ "identify", "config", "track", "reset",
+									   "debug", "show", "ping", "page", "hide", "off", "on" ],
+							   t.factory = function(e) {
+								   return function() {
+									   var n = Array.prototype.slice.call(arguments);
+									   return n.unshift(e), t.push(n), t;
+								   };
+							   }, t.methods.forEach(function(e) {
+								   t[e] = t.factory(e);
+							   }), t.load = function(t) {
+								   var e = 3e5, n = Math.ceil(new Date() / e) * e, o =
+									   document.createElement("script");
+								   o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous",
+									   o.src = "https://js.driftt.com/include/" + n + "/" + t + ".js";
+								   var i = document.getElementsByTagName("script")[0];
+								   i.parentNode.insertBefore(o, i);
+							   };
+	 }
+ }();
+ drift.SNIPPET_VERSION = '0.3.1';
+ drift.load('s64nd7w43g53');
+</script> 
+	</body>
+</html>
