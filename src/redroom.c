@@ -100,6 +100,14 @@ void *exec_tobuf(void *arg) {
 	return NULL;
 }
 
+// ZENROOM.VERSION
+int zenroom_version(CTX *ctx, STR **argv, int argc) {
+	(void)argv;
+	if (argc != 1) return RedisModule_WrongArity(ctx);
+	r_replywithsimplestring(ctx, VERSION);
+	return REDISMODULE_OK;
+}
+
 // main entrypoint symbol
 int RedisModule_OnLoad(CTX *ctx) {
 	// Register the module itself
@@ -112,12 +120,18 @@ int RedisModule_OnLoad(CTX *ctx) {
 	// https://redis.io/commands/command
 	if (RedisModule_CreateCommand(ctx, "zenroom.exec",
 	                              zenroom_exectokey, "write",
-	                              -2, 1, 1) == REDISMODULE_ERR);
+	                              -2, 1, 1) == REDISMODULE_ERR)
+		return REDISMODULE_ERR;
 	if (RedisModule_CreateCommand(ctx, "zenroom.setpwd",
 	                              zenroom_setpwd, "write",
 	                              2, 1, 1) == REDISMODULE_ERR)
-
 		return REDISMODULE_ERR;
+
+	if (RedisModule_CreateCommand(ctx, "zenroom.version",
+	                              zenroom_version,
+	                              "", 0, 0, 0) == REDISMODULE_ERR)
+		return REDISMODULE_ERR;
+
 	return REDISMODULE_OK;
 }
 

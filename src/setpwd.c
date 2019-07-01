@@ -20,33 +20,40 @@
 
 #include <redroom.h>
 
+#define B64SHA512 "write(ECDH.kdf(HASH.new('sha512'),'%s'):base64())"
+
 /// ZENROOM.SETPWD <username> <password>
 int zenroom_setpwd(CTX *ctx, STR **argv, int argc) {
-	RedisModule_AutoMemory(ctx);
+	char stdout_buf[512];
+	char stderr_buf[512];
+	char script[64];
+	// RedisModule_AutoMemory(ctx);
 	// we must have at least 2 args: SCRIPT DESTINATION
 	if (argc < 3) return RedisModule_WrongArity(ctx);
 	debug("setpwd argc: %u",argc);
 	debug("username: %s", str(argv[1]));
-	zcmd_t *zcmd = zcmd_init(ctx);
-	zcmd->bc = r_blockclient(ctx, default_reply,
-	                         default_timeout, default_freedata, 3000);
-	r_setdisconnectcallback(zcmd->bc,default_disconnected);
 
-	KEY *username = r_openkey(ctx, argv[1], REDISMODULE_WRITE);
-	char *password = (char*)r_stringptrlen(argv[2],&zcmd->keyslen);
-	char *script = r_alloc(zcmd->keyslen + strlen(B64SHA512) + 16);
+	char *password = (char*)r_stringptrlen(argv[2],NULL);
+	debug("password: %s",password);
+	// char *script = r_alloc(zcmd->keyslen + strlen(B64SHA512) + 16);
 	snprintf(script, MAX_SCRIPT, B64SHA512, (char*)password);
 	int error = zenroom_exec_tobuf
 		(script, NULL, (char*)password, NULL, 1,
-		 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
-	r_free(script);
-	if(!error)
-		r_stringset((KEY*)username,
-		            r_createstring(ctx, zcmd->stdout_buf,
-		                           strlen(zcmd->stdout_buf)));
-	r_closekey((KEY*)username);
-	if(error)
-		return r_replywitherror(ctx,"ERROR: setpwd");
-	r_replywithsimplestring(ctx,"OK");
-	return REDISMODULE_OK;
+		 stdout_buf, 512, stderr_buf, 512);
+	// r_free(script);
+	if(error) return r_replywitherror(ctx,"ERROR: setpwd");
+	REPLY *reply;
+	reply = RedisModule_Call(ctx,"SET","ss", argv[1],
+	                         r_createstring(ctx, stdout_buf, strlen(stdout_buf)));
+	if (r_callreplytype(reply) == REDISMODULE_REPLY_ERROR) {
+		RedisModule_ReplyWithCallReply(ctx, reply);
+		r_replyfree(reply);
+		return REDISMODULE_ERR;
+	}
+	if (r_callreplytype(reply) == REDISMODULE_REPLY_NULL ) {
+		RedisModule_ReplyWithCallReply(ctx, reply);
+		r_replyfree(reply);
+		return REDISMODULE_ERR;
+	}
+	return r_replywithsimplestring(ctx,"OK");
 }

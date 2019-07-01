@@ -39,7 +39,6 @@
 
 #define B64PCALL   "f = loadstring(base64('%s'):str()); f() "
 
-#define B64SHA512 "print(ECDH.kdf(HASH.new('sha512'),'%s'):base64())"
 
 // parsed command structure passed to execution thread
 typedef enum { EXEC_LUA_TOBUF, EXEC_ZENCODE_TOBUF } zcommand;

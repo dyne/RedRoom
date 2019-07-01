@@ -5,6 +5,7 @@ typedef RedisModuleBlockedClient BLK;
 typedef RedisModuleCtx           CTX;
 typedef RedisModuleString        STR;
 typedef RedisModuleKey           KEY;
+typedef RedisModuleCallReply     REPLY;
 
 #define r_log RedisModule_Log
 
@@ -13,6 +14,8 @@ typedef RedisModuleKey           KEY;
 #define r_calloc(n,p) RedisModule_Calloc(n,p)
 #define r_free(p)  RedisModule_Free(p)
 
+#define r_callreplytype RedisModule_CallReplyType
+#define r_replyfree RedisModule_FreeCallReply
 // redis log level strings:
 // "debug"
 // "verbose"
