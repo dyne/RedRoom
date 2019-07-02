@@ -75,7 +75,7 @@ Performance of `ZENROOM.SETPASS` can be tested with:
 
 On a fifth gen i5 (2.4GHz) running Redis 5 leads to approximately 222 requests per second, each one executing several SHA512 based KDF iterations on each string.
 
-![RedRoom logo](http://redroom.dyne.org/img/redroom-trans.png)
+![RedRoom logo](https://redroom.dyne.org/img/redroom-trans.png)
 
 
 ## Acknowledgements

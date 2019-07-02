@@ -1,5 +1,5 @@
 site_name: RedRoom
-site_url: https://decodeproject.github.io/RedRoom
+site_url: https://redroom.dyne.org
 repo_url: https://github.com/decodeproject/redroom
 site_author: Jaromil
 site_description: RedRoom is powered by the Zenroom crypto VM to bring easy to use yet advanced cryptographic functionalities for Redis.
