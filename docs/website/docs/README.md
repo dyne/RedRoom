@@ -1,6 +1,17 @@
 # Easy crypto for Redis
 
-RedRoom is powered by the [Zenroom crypto VM](https://zenroom.dyne.org) to bring easy to use yet advanced cryptographic functionalities to Redis.
+RedRoom is powered by the [Zenroom crypto VM](https://zenroom.dyne.org) to bring easy to use yet advanced **cryptographic functions in Redis**.
+
+This software is in **ALPHA** stage and published for preview.
+
+The main use-case covered is that of **secure password storage** using hashes inside username keys and check if password matches.
+
+Future plans and low hanging fruits:
+
+- **authenticated private messaging** using encrypted PUB/SUB channels with asymmetric keypairs
+- **brute-force resistant hashing** with alternatives to SHA512 that cannot run on GPUs
+
+We are open to more ideas: don't hesitate to show us your interest, it motivates us!
 
 
 ## <span class="mdi mdi-raspberry-pi turq"></span> Supported platforms
@@ -83,10 +94,6 @@ On a fifth gen i5 (2.4GHz) running Redis 5 leads to approximately 222 requests p
 RedRoom is Copyright (C) 2019 by the [Dyne.org](https://www.dyne.org) foundation
 
 Written and maintained by Denis Roio <jaromil@dyne.org> and co-designed with Andrea D'Intino
-
-<img src="https://zenroom.dyne.org/img/ec_logo.png" class="pic" alt="Project funded by the European Commission">
-
-This project is receiving funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nr. 732546 ([DECODE](https://decodeproject.eu)).
 
 ## License
 
