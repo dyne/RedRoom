@@ -53,14 +53,15 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="field is-grouped">
-                    <p class="control">
-                        <a class="button is-primary" href="">
-                            <span class="icon">
-                                <i class="mdi mdi-download"></i>
-                            </span>
-                            <span>Download</span>
-                        </a>
-                    </p>
+                    <!-- TODO: demo button
+						 <p class="control">
+                         <a class="button is-primary" href="">
+                         <span class="icon">
+                         <i class="mdi mdi-download"></i>
+                         </span>
+                         <span>Download</span>
+                         </a>
+						 </p> -->
                     <p class="control">
                         <a href="https://dyne.org">
                             <img src="https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-Dyne.org-turquoise.svg?style=for-the-badge&logo=gnu" alt="Made with love by Dyne.org" title="We are free to share code and we code to share Freedom"></a>
@@ -113,10 +114,44 @@
         <li>
 	<a href="#commands"> Commands</a>
 	
+    <ul>
+      
+        <li>
+	<a href="#zenroomexec">ZENROOM.EXEC</a>
+	
 </li>
       
         <li>
-	<a href="#examples"> Examples</a>
+	<a href="#zencodeexec">ZENCODE.EXEC</a>
+	
+</li>
+      
+        <li>
+	<a href="#zenroomsetpass">ZENROOM.SETPASS</a>
+	
+</li>
+      
+        <li>
+	<a href="#zenroomcheckpass">ZENROOM.CHECKPASS</a>
+	
+</li>
+      
+    </ul>
+  
+</li>
+      
+        <li>
+	<a href="#benchmark">BENCHMARK</a>
+	
+</li>
+      
+        <li>
+	<a href="#acknowledgements">Acknowledgements</a>
+	
+</li>
+      
+        <li>
+	<a href="#license">License</a>
 	
 </li>
       
@@ -131,25 +166,8 @@
 					<div class="column">
 						<div class="content">
 							 <h1 id="easy-crypto-for-redis">Easy crypto for Redis</h1>
-<p>RedRoom is powered by the Zenroom crypto VM to bring easy to use yet
-advanced cryptographic functionalities for Redis.</p>
-<!-- ## <span class="mdi mdi-fire has-text-danger"></span> Quick Links -->
-
-<!-- <ul style="list-style: none"> -->
-
-<!-- <li><span class="mdi mdi-github-circle"></span> Source Code at Github</li> -->
-
-<!-- <li><span class="mdi mdi-history"></span> Latest Release</li> -->
-
-<!-- <li><span class="mdi mdi-docker"></span> Docker image: dyne/redroom</li> -->
-
-<!-- <li><span class="mdi mdi-school"></span> Quick Start Guide</li> -->
-
-<!-- <li><span class="mdi mdi-forum"></span> Mailing list / forum</li> -->
-
-<!-- </ul> -->
-
-<h2 id="supported-platforms"><span class="mdi mdi-raspberry-pi has-text-info"></span> Supported platforms</h2>
+<p>RedRoom is powered by the <a href="https://zenroom.dyne.org">Zenroom crypto VM</a> to bring easy to use yet advanced cryptographic functionalities to Redis.</p>
+<h2 id="supported-platforms"><span class="mdi mdi-raspberry-pi turq"></span> Supported platforms</h2>
 <p>
 RedRoom is developed and tested on Linux, Windows and Mac OS.
 </p>
@@ -168,21 +186,62 @@ the core of RedRoom is portable to:
 <li> ... even more targets
 </ul></p>
 <h2 id="commands"><span class="mdi mdi-textbox has-text-link" ></span> Commands</h2>
-<ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs help</code> - Print this help message.</li>
-</ul>
-<h2 id="examples"><span class="mdi mdi-code-tags-check has-text-success"></span> Examples</h2>
-<div class="codehilite"><pre><span class="n">mkdocs</span><span class="p">.</span><span class="n">yml</span>    <span class="err">#</span> <span class="n">The</span> <span class="n">configuration</span> <span class="n">file</span><span class="p">.</span>
-<span class="n">docs</span><span class="o">/</span>
-    <span class="n">index</span><span class="p">.</span><span class="n">md</span>  <span class="err">#</span> <span class="n">The</span> <span class="n">documentation</span> <span class="n">homepage</span><span class="p">.</span>
-    <span class="p">...</span>       <span class="err">#</span> <span class="n">Other</span> <span class="n">markdown</span> <span class="n">pages</span><span class="p">,</span> <span class="n">images</span> <span class="n">and</span> <span class="n">other</span> <span class="n">files</span><span class="p">.</span>
+<p>All commands provided by Redroom are prefixed with <code>ZENROOM.</code> or <code>ZENCODE.</code></p>
+<h3 id="zenroomexec">ZENROOM.EXEC</h3>
+<div class="codehilite"><pre><span class="n">ZENROOM</span><span class="p">.</span><span class="n">EXEC</span> <span class="n">SCRIPT</span> <span class="n">DESTINATION</span> <span class="p">[</span> <span class="n">KEYS</span> <span class="n">DATA</span> <span class="p">]</span>
 </pre></div>
 
 
-<p><img alt="RedRoom logo" src="/img/redroom-trans.png" /></p> 
+<p>Execute the contents stored in key <code>SCRIPT</code> using the Zenroom VM language based on Lua, then stores the result in key <code>DESTINATION</code>; the execution is passed two arguments, the contents of keys <code>KEYS</code> and <code>DATA</code>.</p>
+<h3 id="zencodeexec">ZENCODE.EXEC</h3>
+<div class="codehilite"><pre><span class="n">ZENCODE</span><span class="p">.</span><span class="n">EXEC</span> <span class="n">ZENCODE</span> <span class="n">DESTINATION</span> <span class="p">[</span> <span class="n">KEYS</span> <span class="n">DATA</span> <span class="p">]</span>
+</pre></div>
+
+
+<p>Execute the human language instructions stored in the key <code>ZENCODE</code> using the Zenroom VM, then stores the result in key <code>DESTINATION</code>; the execution is passed two arguments, the contents of keys <code>KEYS</code> and <code>DATA</code>. For more information on the human language used see <a href="https://decodeproject.eu/blog/smart-contracts-english-speaker">Zencode: Smart contracts for the English speaker</a>.</p>
+<h3 id="zenroomsetpass">ZENROOM.SETPASS</h3>
+<div class="codehilite"><pre><span class="n">ZENROOM</span><span class="p">.</span><span class="n">SETPASS</span> <span class="n">USERNAME</span> <span class="n">PASSWORD</span>
+</pre></div>
+
+
+<p>Safely stores the string <code>PASSWORD</code> hashed using SHA512 and KDF inside key <code>USERNAME</code> (base64 encoded). Username keys will not contain actual password strings, but hashes that are only useful to verify if the password given at a login is correct, using <code>ZENROOM.CHECKPASS</code>.</p>
+<p>The Zenroom code used is: <code>write(ECDH.kdf(HASH.new('sha512'),'%s'):base64())</code></p>
+<h3 id="zenroomcheckpass">ZENROOM.CHECKPASS</h3>
+<div class="codehilite"><pre><span class="n">ZENROOM</span><span class="p">.</span><span class="n">CHECKPASS</span> <span class="n">USERNAME</span> <span class="n">PASSWORD</span>
+</pre></div>
+
+
+<p>Checks that the key <code>USERNAME</code> is existing and its contents match the <code>PASSWORD</code> string when hashed using SHA512 and KDF.</p>
+<h2 id="benchmark">BENCHMARK</h2>
+<p>A port of redis-benchmark is provided and builds with target <code>make check</code>.</p>
+<p>Performance of <code>ZENROOM.SETPASS</code> can be tested with:</p>
+<div class="codehilite"><pre><span class="p">.</span><span class="o">/</span><span class="n">benchmark</span> <span class="o">-</span><span class="n">t</span> <span class="n">zenroom</span><span class="p">.</span><span class="n">setpwd</span> <span class="o">-</span><span class="n">n</span> <span class="mi">1000</span> <span class="o">-</span><span class="n">r</span> <span class="mi">1000</span>
+</pre></div>
+
+
+<p>On a fifth gen i5 (2.4GHz) running Redis 5 leads to approximately 222 requests per second, each one executing several SHA512 based KDF iterations on each string.</p>
+<p><img alt="RedRoom logo" src="http://redroom.dyne.org/img/redroom-trans.png" /></p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>RedRoom is Copyright (C) 2019 by the <a href="https://www.dyne.org">Dyne.org</a> foundation</p>
+<p>Written and maintained by Denis Roio <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#106;&#97;&#114;&#111;&#109;&#105;&#108;&#64;&#100;&#121;&#110;&#101;&#46;&#111;&#114;&#103;">&#106;&#97;&#114;&#111;&#109;&#105;&#108;&#64;&#100;&#121;&#110;&#101;&#46;&#111;&#114;&#103;</a> and co-designed with Andrea D'Intino</p>
+<p><img src="https://zenroom.dyne.org/img/ec_logo.png" class="pic" alt="Project funded by the European Commission"></p>
+<p>This project is receiving funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nr. 732546 (<a href="https://decodeproject.eu">DECODE</a>).</p>
+<h2 id="license">License</h2>
+<div class="codehilite"><pre><span class="n">RedRoom</span> <span class="n">is</span> <span class="n">Copyright</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="mi">2019</span> <span class="n">by</span> <span class="n">the</span> <span class="n">Dyne</span><span class="p">.</span><span class="n">org</span> <span class="n">foundation</span>
+
+<span class="n">This</span> <span class="n">program</span> <span class="n">is</span> <span class="n">free</span> <span class="n">software</span><span class="o">:</span> <span class="n">you</span> <span class="n">can</span> <span class="n">redistribute</span> <span class="n">it</span> <span class="n">and</span><span class="o">/</span><span class="n">or</span> <span class="n">modify</span>
+<span class="n">it</span> <span class="n">under</span> <span class="n">the</span> <span class="n">terms</span> <span class="n">of</span> <span class="n">the</span> <span class="n">GNU</span> <span class="n">Affero</span> <span class="n">General</span> <span class="n">Public</span> <span class="n">License</span> <span class="n">as</span>
+<span class="n">published</span> <span class="n">by</span> <span class="n">the</span> <span class="n">Free</span> <span class="n">Software</span> <span class="n">Foundation</span><span class="p">,</span> <span class="n">either</span> <span class="n">version</span> <span class="mi">3</span> <span class="n">of</span> <span class="n">the</span>
+<span class="n">License</span><span class="p">,</span> <span class="n">or</span> <span class="p">(</span><span class="n">at</span> <span class="n">your</span> <span class="n">option</span><span class="p">)</span> <span class="n">any</span> <span class="n">later</span> <span class="n">version</span><span class="p">.</span>
+
+<span class="n">This</span> <span class="n">program</span> <span class="n">is</span> <span class="n">distributed</span> <span class="n">in</span> <span class="n">the</span> <span class="n">hope</span> <span class="n">that</span> <span class="n">it</span> <span class="n">will</span> <span class="n">be</span> <span class="n">useful</span><span class="p">,</span>
+<span class="n">but</span> <span class="n">WITHOUT</span> <span class="n">ANY</span> <span class="n">WARRANTY</span><span class="p">;</span> <span class="n">without</span> <span class="n">even</span> <span class="n">the</span> <span class="n">implied</span> <span class="n">warranty</span> <span class="n">of</span>
+<span class="n">MERCHANTABILITY</span> <span class="n">or</span> <span class="n">FITNESS</span> <span class="n">FOR</span> <span class="n">A</span> <span class="n">PARTICULAR</span> <span class="n">PURPOSE</span><span class="p">.</span>  <span class="n">See</span> <span class="n">the</span>
+<span class="n">GNU</span> <span class="n">Affero</span> <span class="n">General</span> <span class="n">Public</span> <span class="n">License</span> <span class="k">for</span> <span class="n">more</span> <span class="n">details</span><span class="p">.</span>
+
+<span class="n">You</span> <span class="n">should</span> <span class="n">have</span> <span class="n">received</span> <span class="n">a</span> <span class="n">copy</span> <span class="n">of</span> <span class="n">the</span> <span class="n">GNU</span> <span class="n">Affero</span> <span class="n">General</span> <span class="n">Public</span> <span class="n">License</span>
+<span class="n">along</span> <span class="n">with</span> <span class="n">this</span> <span class="n">program</span><span class="p">.</span>  <span class="n">If</span> <span class="n">not</span><span class="p">,</span> <span class="n">see</span> <span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//www.gnu.org/licenses/&gt;.</span>
+</pre></div> 
 						</div>
 					</div>
 				</div>
