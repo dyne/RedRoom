@@ -166,7 +166,15 @@
 					<div class="column">
 						<div class="content">
 							 <h1 id="easy-crypto-for-redis">Easy crypto for Redis</h1>
-<p>RedRoom is powered by the <a href="https://zenroom.dyne.org">Zenroom crypto VM</a> to bring easy to use yet advanced cryptographic functionalities to Redis.</p>
+<p>RedRoom is powered by the <a href="https://zenroom.dyne.org">Zenroom crypto VM</a> to bring easy to use yet advanced <strong>cryptographic functions in Redis</strong>.</p>
+<p>This software is in <strong>ALPHA</strong> stage and published for preview.</p>
+<p>The main use-case covered is that of <strong>secure password storage</strong> using hashes inside username keys and check if password matches.</p>
+<p>Future plans and low hanging fruits:</p>
+<ul>
+<li><strong>authenticated private messaging</strong> using encrypted PUB/SUB channels with asymmetric keypairs</li>
+<li><strong>brute-force resistant hashing</strong> with alternatives to SHA512 that cannot run on GPUs</li>
+</ul>
+<p>We are open to more ideas: don't hesitate to show us your interest, it motivates us!</p>
 <h2 id="supported-platforms"><span class="mdi mdi-raspberry-pi turq"></span> Supported platforms</h2>
 <p>
 RedRoom is developed and tested on Linux, Windows and Mac OS.
@@ -224,8 +232,6 @@ the core of RedRoom is portable to:
 <h2 id="acknowledgements">Acknowledgements</h2>
 <p>RedRoom is Copyright (C) 2019 by the <a href="https://www.dyne.org">Dyne.org</a> foundation</p>
 <p>Written and maintained by Denis Roio <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#106;&#97;&#114;&#111;&#109;&#105;&#108;&#64;&#100;&#121;&#110;&#101;&#46;&#111;&#114;&#103;">&#106;&#97;&#114;&#111;&#109;&#105;&#108;&#64;&#100;&#121;&#110;&#101;&#46;&#111;&#114;&#103;</a> and co-designed with Andrea D'Intino</p>
-<p><img src="https://zenroom.dyne.org/img/ec_logo.png" class="pic" alt="Project funded by the European Commission"></p>
-<p>This project is receiving funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nr. 732546 (<a href="https://decodeproject.eu">DECODE</a>).</p>
 <h2 id="license">License</h2>
 <div class="codehilite"><pre><span class="n">RedRoom</span> <span class="n">is</span> <span class="n">Copyright</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="mi">2019</span> <span class="n">by</span> <span class="n">the</span> <span class="n">Dyne</span><span class="p">.</span><span class="n">org</span> <span class="n">foundation</span>
 
@@ -249,9 +255,15 @@ the core of RedRoom is portable to:
 		</section>
 		<footer class="footer">
 	<div class="content has-text-centered">
-		<p>
-			<strong>RedRoom</strong> is Copyright (C) 2019 by the <a href="https://dyne.org">Dyne.org foundation</a>. The source code is licensed <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a>.
-		</p>
+		<p>	<strong>RedRoom</strong> is Copyright (C) 2019 by the <a href="https://dyne.org">Dyne.org foundation</a>. The source code is licensed <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a>. </p>
+		<div class="columns is-gapless">
+			<div class="column is-one-fifth">
+				<img src="assets/img/eu-flag.png"></div>
+			<p class="column is-three-quarters">
+			This project received funding from the European Union’s
+			Horizon 2020 research and innovation programme under grant
+			agreement nr. 732546 (DECODE).</p>
+		</div>
 	</div>
 </footer>
 		
