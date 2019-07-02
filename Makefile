@@ -15,9 +15,11 @@ SOURCES := \
 all: ${ZENROOM_LIB} ${SOURCES}
 	${CC} ${CFLAGS} ${SOURCES} -shared ${LDADD} -o redroom.so
 
-check: LDADD += ${REDIS}/deps/hiredis/libhiredis.so \
-				${REDIS}/deps/jemalloc/lib/libjemalloc.so
-check: CFLAGS += -I${REDIS}/src -I${REDIS}/deps/hiredis
+# benchmark
+check: LDADD += ${REDIS}/deps/hiredis/libhiredis.a \
+				${REDIS}/deps/jemalloc/lib/libjemalloc.a -lpthread -ldl
+check: CFLAGS += -I${REDIS}/src -I${REDIS}/deps/hiredis \
+				 -I${REDIS}/deps/jemalloc/include/jemalloc
 check: ${ZENROOM_LIB} tests/benchmark.o
 	${CC} ${CFLAGS} -I ${REDIS}/src tests/benchmark.o -o benchmark \
 		${REDIS}/src/ae.o ${REDIS}/src/anet.o \

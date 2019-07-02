@@ -720,6 +720,12 @@ int main(int argc, const char **argv) {
     do {
         memset(data,'x',config.datasize);
         data[config.datasize] = '\0';
+        if (test_is_selected("zenroom.setpwd")) {
+		        len = redisFormatCommand
+			        (&cmd,"ZENROOM.SETPWD username:__rand_int__ %s", data);
+		        benchmark("ZENROOM.SETPWD",cmd,len);
+		        free(cmd);
+	        }
 
         if (test_is_selected("ping_inline") || test_is_selected("ping"))
             benchmark("PING_INLINE","PING\r\n",6);
