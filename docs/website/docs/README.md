@@ -34,6 +34,7 @@ the core of RedRoom is portable to:
 <li> ... even more targets
 </ul>
 
+<script id="asciicast-255267" src="https://asciinema.org/a/255267.js" async></script>
 
 ## <span class="mdi mdi-textbox has-text-link" ></span> Commands
 
