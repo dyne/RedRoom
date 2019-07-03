@@ -20,9 +20,10 @@ theme:
   custom_dir: 'mkdocs-dyne-theme/'
 
 extra:
+  basename: redroom
   links:
     releases: https://files.dyne.org/redroom
-    docker: https://hub.docker.com/r/dyne/redroom
+    docker: decodeproject/redroom
   drift_handle: s64nd7w43g53
   nav:
     subtitle: Redis powered by Zenroom
