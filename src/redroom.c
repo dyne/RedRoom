@@ -21,6 +21,22 @@
 // Redis module for multi-threaded blocking operations using Zenroom.
 // This uses Redis' experimental API and is still a work in progress.
 
+const char *redroom_logo = "\n"
+"   .-..``                                                                                                              \n"
+"  `hs/+ooyo:`        :+::..                                                                                            \n"
+"  `ho     .oy-       sy///osso/:`                  -/++//.        `/ysoso/.        `/oyyyy+-      .o+`       /+-       \n"
+"  `yo       sy`     .hy      `.:`          `     `ss-. -ho       :y+    `+y.      :hs-`` -hy.     +h/y      /h.oo      \n"
+"  +y/      -y+       oy.             `-/+soy+    :y/    sy-      +y`     `sy.     yh-     `sy:    +h y+     os  oo     \n"
+"  +y/ ``.:ss-        /y.           .+y+-` `ho    `y+    -yo      yy       /y+     oy:      :yy`   /y--y+   `ys  `ho    \n"
+"  oyyyo+/-.          /y:          /yo.     oy:    /y:   `ys     .yo       .yy     yy-       oy+   +y: .y+  /y.   +h`   \n"
+"  +y-sy:             +ysoys+++// /y:       .y+     -+osshsy/    .yo        ys     oy/       /yo   oh   ss``so    .yo   \n"
+"  oy` :ss.           +y+   `.--. oy-       .yy        -yo-yh`    yy.      .yo     :hy`      +yo  `yo   `ysos`     os   \n"
+"  oy`  `+y+`         +yo         .yo        oy.       -y+ sy:    /y+      -y-      :yo      sy-  :yo    .yy-      .h+  \n"
+"  +y`    .ss:        -ys          oy:      `+yo       +y- /y/     /y.    `+y-      .hy-   `-yy   /y/     `-        sh` \n"
+"  sy`      /ys-      oyyoooossoo/ `:+o+oooss+/-      .ys  /yy     `/os++os+.        `oyyysyo:    yh`               .y+ \n"
+"  yy`       `+:                       ````           +y/  `oo         ````             ````      yy`                :s-\n"
+"  .:                                                 -/                                          `                     \n";
+
 #include <redroom.h>
 
 BLK *block_client(CTX *ctx);
@@ -132,6 +148,8 @@ int RedisModule_OnLoad(CTX *ctx) {
 	                              "", 0, 0, 0) == REDISMODULE_ERR)
 		return REDISMODULE_ERR;
 
+	fprintf(stdout, redroom_logo);
+	r_log(ctx, "notice", "-> Redroom 0.1 powered by Zenroom %s", VERSION);
 	return REDISMODULE_OK;
 }
 
@@ -154,3 +172,5 @@ void default_disconnected(CTX *ctx, BLK *bc) {
 	 * call RedisModule_UnblockClient(), or notify the thread that will
 	 * call the function ASAP. */
 }
+
+
