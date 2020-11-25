@@ -6,33 +6,33 @@ testrounds=100
 
 cat <<EOF | sysread secretgen
 secret = { text = 'test secret',
-	       pin =   RNG.new():octet(16),
+	       pin =   OCTET.random(16),
 		   salt = str('buuZiaquaeth7yiepei0ieCh7chu1soh'),
 		   iter = 10000 }
-write(JSON.encode(map(secret,base64)))
+write(JSON.encode(deepmap(base64,secret)))
 EOF
 
 cat <<EOF | base64 -w0 | sysread encrypt
 secrets = JSON.decode(KEYS, base64)
 key = ECDH.pbkdf2(HASH.new('sha256'), secrets.pin, secrets.salt, secrets.iter, 32)
-cipher = { iv = RNG.new():octet(16), header = 'header' }
+cipher = { iv = OCTET.random(16), header = 'header' }
 cipher.text, cipher.checksum =
    ECDH.aead_encrypt(key, secrets.text,
                      cipher.iv, str(cipher.header))
-output = map(cipher, base64)
+output = deepmap(base64,cipher)
 write(JSON.encode(output))
 EOF
 
 cat <<EOF | base64 -w0 | sysread decrypt
 secrets = JSON.decode(KEYS, base64)
 cipher = map(JSON.decode(DATA),base64)
-key = ECDH.pbkdf2(HASH.new('sha256'), secrets.pin, secrets.salt, secrets.iter, 32)
+key = HASH.pbkdf2(HASH.new('sha256'), secrets.pin, secrets.salt, secrets.iter, 32)
 local decode = { header = cipher.header }
 decode.text, checksum =
    ECDH.aead_decrypt(key, hex(cipher.text),
                      hex(cipher.iv), hex(cipher.header))
 assert(checksum == cipher.checksum)
-print(JSON.encode(map(decode, str)))
+print(JSON.encode(deepmap(str,decode)))
 EOF
 
 newsecret_redis() {
@@ -46,8 +46,8 @@ newsecret_local() {
 }
 
 load_redis() {
-	echo "set encrypt \"b64:$encrypt\"" | redis-cli
-	echo "set decrypt \"b64:$decrypt\"" | redis-cli
+	echo "set encrypt \"$encrypt\"" | redis-cli
+	echo "set decrypt \"$decrypt\"" | redis-cli
 }
 
 execute_redis() {
