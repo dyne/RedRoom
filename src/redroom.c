@@ -71,12 +71,12 @@ void *exec_tobuf(void *arg) {
 	switch(zcmd->CMD) {
 	case EXEC_LUA_TOBUF:
 		zcmd->error = zenroom_exec_tobuf
-			(zcmd->decscript, NULL, zcmd->keys, zcmd->data, 1,
+			(zcmd->decscript, NULL, zcmd->keys, zcmd->data,
 			 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
 		break;
 	case EXEC_ZENCODE_TOBUF:
 		zcmd->error = zencode_exec_tobuf
-			(zcmd->decscript, NULL, zcmd->keys, zcmd->data, 1,
+			(zcmd->decscript, NULL, zcmd->keys, zcmd->data,
 			 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
 		break;
 	}

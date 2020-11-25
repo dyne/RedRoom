@@ -1,7 +1,8 @@
-ZENROOM := $(if ${ZENROOM},${ZENROOM},$(shell realpath '../zenroom'))
+ZENROOM := $(if ${ZENROOM},${ZENROOM},$(shell realpath '../../zenroom'))
 REDIS   := $(if ${REDIS},${REDIS},$(shell realpath '../redis'))
 CFLAGS := -Isrc -I ${ZENROOM}/src -O2 -ggdb -Wall -std=gnu99 -fPIC
-ZENROOM_LIB := ${ZENROOM}/src/libzenroom-x86_64-0.10.so
+LDFLAGS := -Wl,-Bsymbolic
+ZENROOM_LIB := ${ZENROOM}/src/libzenroom-x86_64.so
 LDADD := ${ZENROOM_LIB}
 VERSION := $(shell cat ${ZENROOM}/VERSION)
 
@@ -13,7 +14,7 @@ SOURCES := \
 	$(CC) $(CFLAGS) -c $< -o $@ -DVERSION=\"${VERSION}\"
 
 all: ${ZENROOM_LIB} ${SOURCES}
-	${CC} ${CFLAGS} ${SOURCES} -shared ${LDADD} -o redroom.so
+	${CC} ${CFLAGS} ${LDFLAGS} ${SOURCES} -shared ${LDADD} -o redroom.so
 
 # benchmark
 check: LDADD += ${REDIS}/deps/hiredis/libhiredis.a \

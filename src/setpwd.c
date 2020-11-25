@@ -38,7 +38,7 @@ int zenroom_setpwd(CTX *ctx, STR **argv, int argc) {
 	// char *script = r_alloc(zcmd->keyslen + strlen(B64SHA512) + 16);
 	snprintf(script, MAX_SCRIPT, B64SHA512, (char*)password);
 	int error = zenroom_exec_tobuf
-		(script, NULL, (char*)password, NULL, 1,
+		(script, NULL, (char*)password, NULL,
 		 stdout_buf, 512, stderr_buf, 512);
 	// r_free(script);
 	if(error) return r_replywitherror(ctx,"ERROR: setpwd");
