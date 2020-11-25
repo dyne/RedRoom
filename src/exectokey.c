@@ -22,59 +22,136 @@
 
 int reply_exectokey(CTX *ctx, STR **argv, int argc);
 
+const char *STRPCALL = "" \
+	"if (is_url64('%s')) then f=loadstring(url64('%s')); f()" \
+	" elseif(is_base64('%s')) then f=loadstring(OCTET.from_base64('%s')); f()" \
+	" else f=loadstring('%s'); f() end;";
+
+// const char *B64PCALL =   "f = loadstring(base64('%s'):str()); f() ";
+
+// const char *U64PCALL =   "f = loadstring(url64('%s'):str()); f() ";
+
 /// ZENROOM.EXEC <script> <destination> [<data> <keys>]
 int zenroom_exectokey(CTX *ctx, STR **argv, int argc) {
 	pthread_t tid;
 	// we must have at least 2 args: SCRIPT DESTINATION
 	if (argc < 2) return RedisModule_WrongArity(ctx);
 	debug("argc: %u",argc);
+	int args = 0;
 	zcmd_t *zcmd = zcmd_init(ctx);
-	zcmd->bc = r_blockclient(ctx, reply_exectokey,
-	                         default_timeout, default_freedata, 3000);
-	r_setdisconnectcallback(zcmd->bc,default_disconnected);
-
 	// read scripts also from base64 encoded strings
-	debug("arg1: %s: script to exec", str(argv[1]));
-	z_readargstr(ctx, 1, zcmd->script, zcmd->scriptkey, zcmd->scriptlen);
-	if(!zcmd->script) {
-		return r_replywitherror(ctx,"ZENROOM.EXEC: script string not found");
+	debug("arg1: %s: script to exec", c_str(argv[1]));
+	zcmd->script_k = r_openkey(ctx, argv[1], REDISMODULE_READ);
+	size_t script_l;
+	if(r_keytype(zcmd->script_k) != REDISMODULE_KEYTYPE_STRING) {
+		r_log(ctx,"warning","arg 1 is expected to be a string");
+	} else {
+		zcmd->script_c = r_stringdma(zcmd->script_k,&script_l,REDISMODULE_READ);
 	}
-	// uses zenroom to decode base64 and parse script before launching in protected mode
-	zcmd->decscript = r_alloc(zcmd->scriptlen + strlen(B64PCALL) + 16);
-	snprintf(zcmd->decscript, MAX_SCRIPT, B64PCALL, zcmd->script);
-	r_closekey(zcmd->scriptkey); zcmd->script = NULL;
+	// renders the script inside the wrapper, allocates the buffer
+	zcmd->script = r_alloc(script_l + strlen(STRPCALL) + 16);
+	snprintf(zcmd->script, MAX_SCRIPT, STRPCALL, zcmd->script_d);
+	r_closekey(ctx, zcmd->script_k);
+
+	args++;
+
+	// save source of execution wrapper into an env variable
+	KEY *src_k = r_openkey(ctx, r_str(ctx, "zenroom_exec_src"), REDISMODULE_WRITE);
+	r_stringset(src_k, r_str(ctx, zcmd->script));
+	r_closekey(src_k);
 
 	if(argc > 2) {
-		debug("arg2: %s: destination key", str(argv[2]));
-		zcmd->destkey = r_openkey(ctx, argv[2], REDISMODULE_WRITE);
-	}
+		debug("arg2: %s: destination key", c_str(argv[2]));
+		zcmd->dest_k = r_openkey(ctx, argv[2], REDISMODULE_WRITE);
+	} else args++;
 
 	if(argc > 3) {
-		const char *_data = str(argv[3]);
-		if(_data == NULL || strncmp(_data,"nil",3)==0) {
-			debug("arg3: %s: data key (skip)","NULL");
-			zcmd->data = NULL;
+		const char *_keys = c_str(argv[3]);
+		debug("arg3: %s: keys", _keys);
+		if(_keys == NULL || strncmp(_keys,"nil",3)==0) {
+			debug("arg3: %s: keys (skip)","NULL");
 		} else {
-			debug("arg3: %s: data key", _data);
-			z_readargstr(ctx, 3, zcmd->data, zcmd->datakey, zcmd->datalen);
+			zcmd->keyskey = r_openkey(ctx, argv[3], REDISMODULE_READ);
 		}
-	}
+	} else args++;
+
 	if(argc > 4) {
-		debug("arg4: %s: keys key", str(argv[4]));
-		z_readargstr(ctx, 4, zcmd->keys, zcmd->keyskey, zcmd->keyslen);
-		if(!zcmd->keys)
-			return r_replywitherror(ctx,"-ERR argument 4 is null");			
-	}
-	if (pthread_create(&tid, NULL, exec_tobuf, zcmd) != 0) {
-		RedisModule_AbortBlock(zcmd->bc);
-		r_free(zcmd); // reply not called from abort: free here
-		return r_replywitherror(ctx,"-ERR Can't start thread");
-	}
-	return REDISMODULE_OK;
+		debug("arg4: %s: data key", c_str(argv[4]));
+		zcmd->datakey = r_openkey(ctx, argv[4], REDISMODULE_READ);
+	} else args++;
+	zcmd->argc = args;
+	return(zcmd);
+}
 
-	// no command recognized
-	return r_replywitherror(ctx,"ERR invalid ZENROOM command");
 
+
+int exec_tobuf(zcmd_t *zcmd) {
+	CTX *ctx = zcmd->ctx;
+//	CTX *ctx = RedisModule_GetThreadSafeContext(zcmd->bc);
+//	RedisModule_ThreadSafeContextLock(ctx);
+	// execute script tobuf
+	debug("exec script:\n%s",zcmd->decscript);
+	if(zcmd->datakey) {
+		zcmd->data = r_stringdma(zcmd->datakey,&zcmd->datalen,REDISMODULE_READ);
+		debug("exec data:\n%s",zcmd->data);
+	}
+	if(zcmd->keys) {
+		zcmd->keys = r_stringdma(zcmd->keyskey, &zcmd->keyslen,REDISMODULE_READ);
+		debug("exec keys:\n%s",zcmd->keys);
+	}
+	switch(zcmd->CMD) {
+	case EXEC_LUA_TOBUF:
+		zcmd->error = zenroom_exec_tobuf
+			(zcmd->decscript, NULL, zcmd->keys, zcmd->data,
+			 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
+		break;
+	case EXEC_ZENCODE_TOBUF:
+		zcmd->error = zencode_exec_tobuf
+			(zcmd->decscript, NULL, zcmd->keys, zcmd->data,
+			 zcmd->stdout_buf, MAXOUT, zcmd->stderr_buf, MAXOUT);
+		break;
+	}
+
+	if(zcmd->decscript) r_free(zcmd->decscript);
+	if(zcmd->datakey) r_closekey(zcmd->datakey);
+	if(zcmd->keyskey) r_closekey(zcmd->keyskey);
+
+	zcmd->stdout_len = strlen(zcmd->stdout_buf);
+	zcmd->stderr_len = strlen(zcmd->stderr_buf);
+	if(zcmd->error && zcmd->destkey) {
+		STR *out = r_createstring(ctx, zcmd->stderr_buf, zcmd->stderr_len);
+		r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s", zcmd->stderr_buf);
+		r_stringset(zcmd->destkey, out);
+	}
+	if(zcmd->error && !zcmd->destkey) {
+		r_log(ctx, "warning", "ZENROOM.EXEC error:\n%s", zcmd->stderr_buf);
+	}
+	if(!zcmd->error && !zcmd->destkey) {
+		r_log(ctx, "notice", "ZENROOM.EXEC success:\n%s", zcmd->stdout_buf);
+	}
+	if(!zcmd->error && zcmd->destkey) {
+		STR *out = r_createstring(ctx, zcmd->stdout_buf, zcmd->stdout_len);
+		r_log(ctx, "verbose", "ZENROOM.EXEC success:\n%s", zcmd->stdout_buf);
+		r_stringset(zcmd->destkey, out);
+	}
+	// close, unlock and unblock after execution
+	r_closekey(zcmd->destkey);
+//	RedisModule_ThreadSafeContextUnlock(ctx);
+//	RedisModule_FreeThreadSafeContext(ctx);
+//	r_unblockclient(zcmd->bc,zcmd);
+
+	// zcmd is allocated by caller, freed by Zenroom_FreeData
+	// all internal dynamic buffer allocations must be freed
+	// at this point
+
+	return NULL;
+
+	zcmd_t *zcmd = z_readexecargs(ctx, argc, argv, zcmd);
+	exec_tobuf(zcmd);
+	if(zcmd->error)
+		return REDISMODULE_ERR;
+	else
+		return REDISMODULE_OK;
 }
 
 int reply_exectokey(CTX *ctx, STR **argv, int argc) {

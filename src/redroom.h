@@ -35,28 +35,32 @@
 #include <redis_namespace.h>
 
 
-#define STRPCALL         "f = loadstring('%s'); f()"	
 
-#define B64PCALL   "f = loadstring(base64('%s'):str()); f() "
+
+// #define STRPCALL         "f = loadstring('%s'); f()"	
+
+// #define B64PCALL   "f = loadstring(base64('%s'):str()); f() "
 
 
 // parsed command structure passed to execution thread
 typedef enum { EXEC_LUA_TOBUF, EXEC_ZENCODE_TOBUF } zcommand;
 typedef struct {
-	BLK      *bc;   // redis blocked client
+	CTX      *ctx; // redis context
+//	BLK      *bc;   // redis blocked client
 	zcommand  CMD;  // zenroom command (enum)
-	KEY      *scriptkey; // redis key for script string
-	char     *script;    // script string
-	size_t    scriptlen; // length of script string
-	char     *decscript; // base64 decoded script
-	KEY      *datakey;
-	char     *data;
-	size_t    datalen;
-	KEY      *keyskey;
-	char     *keys;
-	size_t    keyslen;
-	KEY      *destkey;
-	char     *dest;
+	int      *argc;
+	KEY      *script_k; // redis key for script string
+	char     *script_c; // script string in DMA
+	char     *script;  // rendered script
+
+	KEY      *data_k;
+	char     *data_c;
+
+	KEY      *keys_k;
+	char     *keys_c;
+
+	KEY      *dest_k;
+	char     *dest_c;
 	int error;
 	char stdout_buf[MAXOUT];
 	size_t stdout_len;
@@ -64,7 +68,7 @@ typedef struct {
 	size_t stderr_len;
 } zcmd_t;
 
-zcmd_t *zcmd_init(CTX *ctx);
+zcmd_t *zcmd_init(CTX *ctx, int argc, STR **argv);
 void *exec_tobuf(void *arg);
 
 int default_reply(CTX *ctx, STR **argv, int argc);

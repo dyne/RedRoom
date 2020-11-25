@@ -20,7 +20,14 @@
 
 #include <redroom.h>
 
-#define B64SHA512 "write(ECDH.kdf(HASH.new('sha512'),'%s'):base64())"
+const char *B64SHA512 = "write(ECDH.kdf(HASH.new('sha512'),'%s'):url64())";
+
+
+/// ZENROOM.SETPWD.SRC
+int zenroom_setpwd_src(CTX *ctx, STR **argv, int argc) {
+	(void)argv; (void)argc;
+	return r_replywithsimplestring(ctx,B64SHA512);
+}
 
 /// ZENROOM.SETPWD <username> <password>
 int zenroom_setpwd(CTX *ctx, STR **argv, int argc) {
@@ -31,20 +38,21 @@ int zenroom_setpwd(CTX *ctx, STR **argv, int argc) {
 	// we must have at least 2 args: SCRIPT DESTINATION
 	if (argc < 3) return RedisModule_WrongArity(ctx);
 	debug("setpwd argc: %u",argc);
-	debug("username: %s", str(argv[1]));
+	debug("username: %s", c_str(argv[1]));
 
 	char *password = (char*)r_stringptrlen(argv[2],NULL);
 	debug("password: %s",password);
 	// char *script = r_alloc(zcmd->keyslen + strlen(B64SHA512) + 16);
 	snprintf(script, MAX_SCRIPT, B64SHA512, (char*)password);
 	int error = zenroom_exec_tobuf
-		(script, NULL, (char*)password, NULL, 1,
+		(script, NULL, password, NULL,
 		 stdout_buf, 512, stderr_buf, 512);
 	// r_free(script);
 	if(error) return r_replywitherror(ctx,"ERROR: setpwd");
 	REPLY *reply;
 	reply = RedisModule_Call(ctx,"SET","ss", argv[1],
-	                         r_createstring(ctx, stdout_buf, strlen(stdout_buf)));
+	                         r_createstring(ctx, stdout_buf,
+	                                        strlen(stdout_buf)));
 	if (r_callreplytype(reply) == REDISMODULE_REPLY_ERROR) {
 		RedisModule_ReplyWithCallReply(ctx, reply);
 		r_replyfree(reply);

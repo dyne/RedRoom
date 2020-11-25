@@ -1,6 +1,6 @@
 # Easy crypto for Redis
 
-RedRoom is powered by the [Zenroom crypto VM](https://zenroom.dyne.org) to bring easy to use yet advanced **cryptographic functions in Redis**.
+RedRoom is powered by the [Zenroom crypto VM](https://zenroom.org) to bring easy to use yet advanced **cryptographic functions in Redis**.
 
 This software is in **ALPHA** stage and published for preview.
 
@@ -24,7 +24,7 @@ RedRoom is developed and tested on Linux, Windows and Mac OS.
 RedRoom runs fine on ARM, i386 and x86_64 CPUs.
 </p>
 
-The <a href="https://zenroom.dyne.org">Zenroom</a> crypto engine at
+The <a href="https://zenroom.org">Zenroom</a> crypto engine at
 the core of RedRoom is portable to:
 <ul style="list-style: none">
 <li><span class="mdi mdi-apple"></span> native iOS framework

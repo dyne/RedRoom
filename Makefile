@@ -1,4 +1,4 @@
-ZENROOM := $(if ${ZENROOM},${ZENROOM},$(shell realpath '../zenroom'))
+ZENROOM := $(if ${ZENROOM},${ZENROOM},$(shell realpath '../../zenroom'))
 REDIS   := $(if ${REDIS},${REDIS},$(shell realpath '../redis'))
 CFLAGS := -Isrc -I ${ZENROOM}/src -O2 -ggdb -Wall -std=gnu99 -fPIC
 ZENROOM_LIB := ${ZENROOM}/src/libzenroom-x86_64-0.10.so
@@ -6,7 +6,7 @@ LDADD := ${ZENROOM_LIB}
 VERSION := $(shell cat ${ZENROOM}/VERSION)
 
 SOURCES := \
-	src/redroom.o src/exectokey.o src/setpwd.o
+	src/redroom.o src/setpwd.o src/zcmd.o
 
 
 .c.o:
